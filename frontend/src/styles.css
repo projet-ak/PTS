@@ -686,6 +686,45 @@ td .cell-actions select {
   flex-shrink: 0;
 }
 
+.activity-photo.zoomable {
+  cursor: zoom-in;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.activity-photo.zoomable:hover {
+  transform: scale(1.04);
+  box-shadow: var(--shadow-md);
+}
+
+/* Buyutulmus goruntu: aktivite penceresinin ustunde tam ekran katman. */
+.photo-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(4, 18, 15, 0.86);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  padding: 2rem;
+  cursor: zoom-out;
+}
+
+.photo-zoom img {
+  max-width: min(92vw, 1100px);
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: var(--radius);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.photo-zoom-caption {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 .activity-photo.empty {
   display: flex;
   align-items: center;

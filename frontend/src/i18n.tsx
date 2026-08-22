@@ -113,6 +113,7 @@ const TR = {
     "Çıkışı eşleşmeyen giriş var; süre eksik hesaplandı",
   "sheet.events": "hareket",
   "sheet.noPhoto": "foto yok",
+  "sheet.zoom": "Büyütmek için tıklayın",
   "sheet.noCheckpoint": "nokta yok",
   "sheet.manual": "elle",
 
@@ -319,6 +320,7 @@ const EN: Record<Key, string> = {
   "sheet.incompleteHint": "An entry has no matching exit; hours are understated",
   "sheet.events": "events",
   "sheet.noPhoto": "no photo",
+  "sheet.zoom": "Click to enlarge",
   "sheet.noCheckpoint": "no checkpoint",
   "sheet.manual": "manual",
 

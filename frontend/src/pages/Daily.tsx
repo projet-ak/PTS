@@ -289,6 +289,10 @@ function ActivityModal({
   const { t, lang } = useI18n();
   const [photos, setPhotos] = useState<Record<number, string>>({});
 
+  /// Buyutulen fotograf. Ayni blob URL'i kullaniyoruz; goruntu zaten
+  /// indirilmis oldugu icin buyutmek yeni istek gerektirmiyor.
+  const [zoom, setZoom] = useState<{ url: string; caption: string } | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     const created: string[] = [];
@@ -331,7 +335,20 @@ function ActivityModal({
           {events.map((e) => (
             <div key={e.id} className={`activity ${e.direction}`}>
               {photos[e.id] ? (
-                <img src={photos[e.id]} alt="" className="activity-photo" />
+                <img
+                  src={photos[e.id]}
+                  alt=""
+                  className="activity-photo zoomable"
+                  title={t("sheet.zoom")}
+                  onClick={() =>
+                    setZoom({
+                      url: photos[e.id],
+                      caption: `${name} · ${
+                        e.direction === "in" ? t("common.in") : t("common.out")
+                      } · ${new Date(e.occurred_at).toLocaleString(locale(lang))}`,
+                    })
+                  }
+                />
               ) : (
                 <div className="activity-photo empty">
                   {e.has_photo ? "..." : t("sheet.noPhoto")}
@@ -358,6 +375,21 @@ function ActivityModal({
           {events.length === 0 && <p className="hint">{t("sheet.empty")}</p>}
         </div>
       </div>
+
+      {zoom && (
+        <div
+          className="photo-zoom"
+          onClick={(e) => {
+            // Buyutulmus goruntu ustteki katman; tiklama alttaki aktivite
+            // penceresini kapatmasin.
+            e.stopPropagation();
+            setZoom(null);
+          }}
+        >
+          <img src={zoom.url} alt="" />
+          <span className="photo-zoom-caption">{zoom.caption}</span>
+        </div>
+      )}
     </div>
   );
 }
