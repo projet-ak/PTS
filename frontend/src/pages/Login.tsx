@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { type ApiRequestError } from "../api";
 import { useAuth } from "../auth";
 import { LanguageSwitch, useI18n } from "../i18n";
 import { CONCEPT, DEVELOPER, LOGOS } from "../logos";
@@ -37,7 +38,15 @@ export default function Login() {
       setError(null);
       await login(username, password);
     } catch (err) {
-      setError((err as Error).message);
+      const api = err as ApiRequestError;
+      // Sunucu mesaji tek dilli; kod varsa kendi sozlugumuzden yaziyoruz.
+      if (api.code === "locked_out") {
+        setError(t("login.locked", { min: api.retryAfterMinutes ?? 15 }));
+      } else if (api.code === "invalid_credentials") {
+        setError(t("login.invalid"));
+      } else {
+        setError(api.message);
+      }
     } finally {
       setBusy(false);
     }

@@ -67,6 +67,9 @@ const TR = {
   "login.password": "Parola",
   "login.submit": "Giriş",
   "login.checking": "Kontrol ediliyor...",
+  "login.invalid": "Kullanıcı adı veya parola hatalı.",
+  "login.locked":
+    "Çok fazla hatalı deneme. Hesap kilitlendi, {min} dakika sonra tekrar deneyin.",
   "login.taglineA": "Personel Takip",
   "login.taglineB": "Sistemi",
   "login.brandSub":
@@ -275,6 +278,9 @@ const EN: Record<Key, string> = {
   "login.password": "Password",
   "login.submit": "Sign in",
   "login.checking": "Checking...",
+  "login.invalid": "Wrong username or password.",
+  "login.locked":
+    "Too many failed attempts. The account is locked, try again in {min} minutes.",
   "login.taglineA": "Staff Tracking",
   "login.taglineB": "System",
   "login.brandSub":

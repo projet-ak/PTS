@@ -14,6 +14,12 @@ pub enum ApiError {
     #[error("{0}")]
     Forbidden(String),
 
+    #[error("kullanici adi veya parola hatali")]
+    InvalidCredentials,
+
+    #[error("cok fazla hatali deneme")]
+    LockedOut { minutes: i64 },
+
     #[error("{0}")]
     BadRequest(String),
 
@@ -30,6 +36,33 @@ pub enum ApiError {
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         // sqlx'in "satir yok" hatasini 404'e cevir, digerlerini 500 olarak logla.
+        // Bu ikisinin govdesi kod tasir: panel iki dilli oldugu icin metni
+        // istemci kendi dilinde uretir.
+        match &self {
+            ApiError::InvalidCredentials => {
+                return (
+                    StatusCode::FORBIDDEN,
+                    Json(json!({
+                        "error": self.to_string(),
+                        "code": "invalid_credentials",
+                    })),
+                )
+                    .into_response();
+            }
+            ApiError::LockedOut { minutes } => {
+                return (
+                    StatusCode::TOO_MANY_REQUESTS,
+                    Json(json!({
+                        "error": format!("cok fazla hatali deneme; {minutes} dakika sonra deneyin"),
+                        "code": "locked_out",
+                        "retry_after_minutes": minutes,
+                    })),
+                )
+                    .into_response();
+            }
+            _ => {}
+        }
+
         let (status, message) = match &self {
             ApiError::NotFound => (StatusCode::NOT_FOUND, self.to_string()),
             ApiError::Unauthorized => (StatusCode::UNAUTHORIZED, self.to_string()),
@@ -45,6 +78,9 @@ impl IntoResponse for ApiError {
             }
             ApiError::Database(sqlx::Error::RowNotFound) => {
                 (StatusCode::NOT_FOUND, "kayit bulunamadi".to_string())
+            }
+            ApiError::InvalidCredentials | ApiError::LockedOut { .. } => {
+                unreachable!("yukarida donuldu")
             }
             ApiError::Database(e) => {
                 tracing::error!(error = %e, "veritabani hatasi");

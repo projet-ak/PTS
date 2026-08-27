@@ -15,6 +15,10 @@ pub struct Config {
     /// Hic kullanici yokken olusturulacak ilk yonetici hesabi.
     pub admin_username: String,
     pub admin_password: Option<String>,
+    /// Ust uste bu kadar hatali denemeden sonra hesap kilitlenir.
+    pub login_max_attempts: i32,
+    /// Kilit suresi (dakika).
+    pub login_lock_minutes: i64,
     /// Gecis fotograflarinin yazildigi dizin. Veritabaninda yalnizca yol
     /// durur; dosyalar burada birikir ve ayri yedeklenir.
     pub photo_dir: String,
@@ -48,6 +52,16 @@ impl Config {
             admin_password: env::var("PTS_ADMIN_PASSWORD")
                 .ok()
                 .filter(|v| !v.trim().is_empty()),
+            login_max_attempts: env::var("PTS_LOGIN_MAX_ATTEMPTS")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .filter(|v| *v > 0)
+                .unwrap_or(3),
+            login_lock_minutes: env::var("PTS_LOGIN_LOCK_MINUTES")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .filter(|v| *v > 0)
+                .unwrap_or(15),
             photo_dir: env::var("PTS_PHOTO_DIR").unwrap_or_else(|_| "/data/photos".into()),
             allow_anonymous_kiosk: env::var("PTS_ALLOW_ANONYMOUS_KIOSK")
                 .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))

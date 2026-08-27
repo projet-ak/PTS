@@ -121,6 +121,12 @@ Roller: `admin` her şeyi yapar (kullanıcı, firma, geçiş noktası dahil), `h
 rolde 403 döner. İlk yönetici hesabı `PTS_ADMIN_USERNAME` / `PTS_ADMIN_PASSWORD` ile
 **sadece hiç kullanıcı yokken** oluşturulur.
 
+**Giriş deneme sınırı:** üst üste 3 hatalı denemeden sonra hesap 15 dakika
+kilitlenir; bu süre boyunca doğru parola bile kabul edilmez. Sayaç ve kilit
+veritabanında tutulur, servis yeniden başlasa da geçerli kalır. Başarılı giriş
+sayacı sıfırlar. Değerler `PTS_LOGIN_MAX_ATTEMPTS` ve `PTS_LOGIN_LOCK_MINUTES`
+ile değiştirilebilir.
+
 Kiosk cihazları oturum açmaz. Her cihaz bir geçiş noktasına bağlanır ve
 isteklerinde `X-Checkpoint-Key` başlığını gönderir; anahtar sunucuda üretilir,
 panelin **Geçiş Noktaları** sayfasından kopyalanıp cihaza bir kez girilir.

@@ -138,6 +138,12 @@ function filterQuery(f: TimesheetFilter): string {
   return q ? `?${q}` : "";
 }
 
+/// Sunucudan gelen hata; ceviri icin kod tasiyabilir.
+export interface ApiRequestError extends Error {
+  code?: string;
+  retryAfterMinutes?: number;
+}
+
 /// Oturum tokeni bellekte tutulur; sayfa yuklenirken AuthProvider doldurur.
 let authToken: string | null = null;
 
@@ -165,7 +171,12 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(body.error ?? "istek basarisiz");
+    // Sunucu bazi hatalarda kod dondurur; panel iki dilli oldugu icin metni
+    // istemci kendi dilinde uretebilsin diye kodu hataya ilistiriyoruz.
+    const err = new Error(body.error ?? "istek basarisiz") as ApiRequestError;
+    err.code = body.code;
+    err.retryAfterMinutes = body.retry_after_minutes;
+    throw err;
   }
 
   // 204 gibi govdesiz cevaplarda json() patlar.
